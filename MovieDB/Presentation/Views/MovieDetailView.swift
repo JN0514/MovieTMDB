@@ -83,7 +83,7 @@ struct MovieDetailView: View {
             }
         }
         .alert(vm.alertTitle, isPresented: $vm.showAlert) {
-            Button("OK") { dismiss() }
+            Button("Retry") { vm.retryReqeuest() }
         } message: {
             Text(vm.errMsg)
         }

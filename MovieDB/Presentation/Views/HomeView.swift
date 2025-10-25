@@ -44,7 +44,9 @@ struct HomeView: View {
             if vm.isLoading { ProgressView() }
         })
         .alert(vm.alertTitle, isPresented: $vm.showAlert) {
-            Button("Okay", role: .cancel) {}
+            Button("Retry", role: .cancel) {
+                vm.retryRequest()
+            }
         } message: {
             Text(vm.errMsg)
         }

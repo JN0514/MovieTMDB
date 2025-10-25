@@ -38,6 +38,11 @@ class HomeViewModel: ObservableObject {
         loadPopularMovies()
     }
     
+    func retryRequest() {
+        showAlert = false
+        searchOrLoad(searchTxt)
+    }
+    
     func loadPopularMovies() {
         isLoading = true
         repository.getPopular()

@@ -26,6 +26,11 @@ class MovieDetailViewModel: ObservableObject {
         loadDetailResponse()
     }
 
+    func retryReqeuest() {
+        showAlert = false
+        loadDetailResponse()
+    }
+    
     func loadDetailResponse() {
         isLoading = true
         let detailPub = repo.getDetail(movieId: movieId)
