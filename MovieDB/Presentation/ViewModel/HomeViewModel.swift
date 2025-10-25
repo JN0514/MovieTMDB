@@ -14,7 +14,10 @@ class HomeViewModel: ObservableObject {
     var alertTitle = ""
     var errMsg = ""
     @Published var showAlert = false
+
     @Published var favorites: Set<Int> = []
+
+    @Published var searchTxt = ""
     
     private let repository: MovieRepositoryProtocol
     private var cancellables = Set<AnyCancellable>()
@@ -23,6 +26,15 @@ class HomeViewModel: ObservableObject {
         self.repository = repository
         self.favorites = FavoritesStore.shared.load()
 
+        $searchTxt
+            .dropFirst()
+            .removeDuplicates()
+            .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
+            .sink { [weak self] search in
+                self?.searchOrLoad(search)
+            }
+            .store(in: &cancellables)
+        
         loadPopularMovies()
     }
     
@@ -33,6 +45,25 @@ class HomeViewModel: ObservableObject {
                 self?.isLoading = false
                 if case let .failure(err) = completion {
                     self?.alertTitle = "Failed to fetch movies"
+                    self?.errMsg = err.localizedDescription
+                    self?.showAlert = true
+                }
+            }, receiveValue: { [weak self] movies in
+                self?.movies = movies
+            })
+            .store(in: &cancellables)
+    }
+    
+    private func searchOrLoad(_ searchStr: String) {
+        if searchStr.isEmpty {
+            loadPopularMovies(); return
+        }
+        isLoading = true
+        repository.search(searchQuery: searchStr)
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.isLoading = false
+                if case let .failure(err) = completion {
+                    self?.alertTitle = "Failed to search movies"
                     self?.errMsg = err.localizedDescription
                     self?.showAlert = true
                 }

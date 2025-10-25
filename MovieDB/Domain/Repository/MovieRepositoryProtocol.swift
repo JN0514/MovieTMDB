@@ -13,4 +13,5 @@ protocol MovieRepositoryProtocol {
     func getDetail(movieId: Int) -> AnyPublisher<MovieDetail, Error>
     func getVideos(movieId: Int) -> AnyPublisher<[Video], Error>
     func getCasts(movieId: Int) -> AnyPublisher<[Cast], Error>
+    func search(searchQuery: String) -> AnyPublisher<[Movie], Error>
 }

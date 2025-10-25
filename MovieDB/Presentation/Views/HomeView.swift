@@ -14,12 +14,12 @@ struct HomeView: View {
     var body: some View {
         List {
             if !vm.isLoading && vm.movies.isEmpty {
-                Text("No movies found")
+                Text("No popular movies found")
                     .foregroundColor(.gray)
                     .italic()
                     .padding()
             } else {
-                Section() {
+                Section {
                     ForEach(vm.movies) { movie in
                         NavigationLink {
                             MovieDetailView(movieId: movie.id)
@@ -34,6 +34,7 @@ struct HomeView: View {
             }
         }
         .listStyle(.plain)
+        .searchable(text: $vm.searchTxt, prompt: "Search movies...")
         .navigationTitle("Popular Movies")
         .onAppear(perform: {
             vm.updateFavorites()
@@ -48,4 +49,8 @@ struct HomeView: View {
         }
         
     }
+}
+
+#Preview {
+    HomeView()
 }

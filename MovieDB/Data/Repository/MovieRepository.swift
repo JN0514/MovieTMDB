@@ -37,4 +37,10 @@ class MovieRepository: MovieRepositoryProtocol {
             .map { $0.cast ?? [] }
             .eraseToAnyPublisher()
     }
+    
+    func search(searchQuery: String) -> AnyPublisher<[Movie], Error> {
+        client.fetch(ListResponse<Movie>.self, url: Endpoints.search(query: searchQuery))
+            .map { $0.results ?? [] }
+            .eraseToAnyPublisher()
+    }
 }
