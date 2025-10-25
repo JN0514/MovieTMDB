@@ -27,6 +27,11 @@ struct HomeView: View {
                             MovieRowView(movie: movie, isFav: vm.isFavorite(movieId: movie.id)) {
                                 vm.toggleFavorite(movieId: movie.id)
                             }
+                            .onAppear {
+                                if movie == vm.movies.last {
+                                    vm.searchOrLoadForPagingation()
+                                }
+                            }
                         }
                     }
                     .listSectionSeparator(.hidden)

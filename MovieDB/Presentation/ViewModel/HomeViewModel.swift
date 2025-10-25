@@ -10,6 +10,12 @@ import Foundation
 
 class HomeViewModel: ObservableObject {
     @Published var movies: [Movie] = []
+    private var popularMoviesPageno = 1
+    private var popularMovies: [Movie] = []
+    
+    private var searchMoviesPageno = 1
+    private var searchMovies: [Movie] = []
+    
     @Published var isLoading = false
     var alertTitle = ""
     var errMsg = ""
@@ -31,6 +37,8 @@ class HomeViewModel: ObservableObject {
             .removeDuplicates()
             .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
             .sink { [weak self] search in
+                self?.searchMoviesPageno = 1
+                self?.previousRequestedPageNo = 0
                 self?.searchOrLoad(search)
             }
             .store(in: &cancellables)
@@ -40,12 +48,18 @@ class HomeViewModel: ObservableObject {
     
     func retryRequest() {
         showAlert = false
-        searchOrLoad(searchTxt)
+        if searchTxt.isEmpty {
+            loadPopularMovies()
+        } else {
+            searchMovies(searchTxt)
+        }
     }
     
+    private var previousRequestedPageNo = 0
     func loadPopularMovies() {
+        previousRequestedPageNo = popularMoviesPageno
         isLoading = true
-        repository.getPopular()
+        repository.getPopular(pageNo: popularMoviesPageno)
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
                 if case let .failure(err) = completion {
@@ -54,26 +68,49 @@ class HomeViewModel: ObservableObject {
                     self?.showAlert = true
                 }
             }, receiveValue: { [weak self] movies in
-                self?.movies = movies
+                self?.popularMovies.append(contentsOf: movies)
+                self?.movies = self?.popularMovies ?? []
+                if !movies.isEmpty {
+                    self?.popularMoviesPageno += 1
+                }
             })
             .store(in: &cancellables)
     }
     
     private func searchOrLoad(_ searchStr: String) {
         if searchStr.isEmpty {
-            loadPopularMovies(); return
+            movies = popularMovies
+            return
         }
+        searchMovies(searchStr)
+    }
+    
+    func searchOrLoadForPagingation() {
+        if searchTxt.isEmpty {
+            guard previousRequestedPageNo != popularMoviesPageno else { return }
+            loadPopularMovies()
+        } else {
+            guard previousRequestedPageNo != searchMoviesPageno else { return }
+            searchMovies(searchTxt)
+        }
+    }
+    
+    private func searchMovies(_ searchStr: String) {
+        previousRequestedPageNo = searchMoviesPageno
         isLoading = true
-        repository.search(searchQuery: searchStr)
+        repository.search(searchQuery: searchStr, pageNo: searchMoviesPageno)
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
                 if case let .failure(err) = completion {
                     self?.alertTitle = "Failed to search movies"
                     self?.errMsg = err.localizedDescription
                     self?.showAlert = true
+                } else {
+                    self?.searchMoviesPageno += 1
                 }
             }, receiveValue: { [weak self] movies in
-                self?.movies = movies
+                self?.searchMovies.append(contentsOf: movies)
+                self?.movies = self?.searchMovies ?? []
             })
             .store(in: &cancellables)
     }

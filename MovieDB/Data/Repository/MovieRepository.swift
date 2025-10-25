@@ -16,8 +16,8 @@ class MovieRepository: MovieRepositoryProtocol {
         self.client = client
     }
 
-    func getPopular() -> AnyPublisher<[Movie], Error> {
-        client.fetch(ListResponse<Movie>.self, url: Endpoints.popular())
+    func getPopular(pageNo: Int) -> AnyPublisher<[Movie], Error> {
+        client.fetch(ListResponse<Movie>.self, url: Endpoints.popular(pageNo: pageNo))
             .map { $0.results ?? [] }
             .eraseToAnyPublisher()
     }
@@ -38,8 +38,8 @@ class MovieRepository: MovieRepositoryProtocol {
             .eraseToAnyPublisher()
     }
     
-    func search(searchQuery: String) -> AnyPublisher<[Movie], Error> {
-        client.fetch(ListResponse<Movie>.self, url: Endpoints.search(query: searchQuery))
+    func search(searchQuery: String, pageNo: Int) -> AnyPublisher<[Movie], Error> {
+        client.fetch(ListResponse<Movie>.self, url: Endpoints.search(query: searchQuery, pageNo: pageNo))
             .map { $0.results ?? [] }
             .eraseToAnyPublisher()
     }

@@ -8,12 +8,12 @@
 import Foundation
 
 enum Endpoints {
-    static func popular() -> URL {
-        URL(string: "\(AppConfig.baseURL)/movie/popular?api_key=\(AppConfig.apiKey)")!
+    static func popular(pageNo: Int = 1) -> URL {
+        URL(string: "\(AppConfig.baseURL)/movie/popular?api_key=\(AppConfig.apiKey)&page=\(pageNo)")!
     }
-    static func search(query: String) -> URL {
+    static func search(query: String, pageNo: Int = 1) -> URL {
         let q = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        return URL(string: "\(AppConfig.baseURL)/search/movie?api_key=\(AppConfig.apiKey)&query=\(q)")!
+        return URL(string: "\(AppConfig.baseURL)/search/movie?api_key=\(AppConfig.apiKey)&query=\(q)&page=\(pageNo)")!
     }
     static func detail(id: Int) -> URL {
         URL(string: "\(AppConfig.baseURL)/movie/\(id)?api_key=\(AppConfig.apiKey)")!
