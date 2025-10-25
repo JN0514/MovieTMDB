@@ -34,6 +34,7 @@ struct HomeView: View {
             }
         }
         .listStyle(.plain)
+        .scrollIndicators(.hidden)
         .searchable(text: $vm.searchTxt, prompt: "Search movies...")
         .navigationTitle("Popular Movies")
         .onAppear(perform: {

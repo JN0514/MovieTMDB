@@ -31,6 +31,7 @@ struct MovieDetailView: View {
                                 Image(systemName: "play.circle.fill").font(.system(size: 64))
                             }
                             .frame(height: 200)
+                            .frame(maxWidth: .infinity)
                         }
                     }
                     
@@ -44,6 +45,17 @@ struct MovieDetailView: View {
                     Text("Genres: \(vm.movieDetailModel?.moveDetail.genres.map { $0.name }.joined(separator: ", ") ?? "—")")
                         .font(.subheadline)
                     Divider()
+                    Text("Casts").bold()
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(vm.movieDetailModel?.castList ?? []) { cast in
+                                CastProfileView(cast: cast)
+                            }
+                        }
+                    }
+                    .scrollIndicators(.hidden)
+                    Divider()
+                    Text("Plot").bold()
                     Text(vm.movieDetailModel?.moveDetail.overview ?? "No overview")
                     
                     Button(action: vm.toggleFavorite) {
@@ -59,6 +71,7 @@ struct MovieDetailView: View {
                 .padding()
             }
         }
+        .scrollIndicators(.hidden)
         .overlay {
             if vm.isLoading {
                 ProgressView()
