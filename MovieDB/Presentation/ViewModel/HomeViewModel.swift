@@ -48,4 +48,8 @@ class HomeViewModel: ObservableObject {
     }
 
     func isFavorite(movieId: Int) -> Bool { favorites.contains(movieId) }
+    
+    func updateFavorites() {
+        self.favorites = FavoritesStore.shared.load()
+    }
 }

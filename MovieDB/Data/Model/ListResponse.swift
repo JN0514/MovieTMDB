@@ -8,4 +8,5 @@
 
 struct ListResponse<T: Codable>: Codable {
     let results: [T]?
+    let cast: [T]?
 }

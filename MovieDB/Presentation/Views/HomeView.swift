@@ -22,9 +22,7 @@ struct HomeView: View {
                 Section() {
                     ForEach(vm.movies) { movie in
                         NavigationLink {
-                            VStack {
-                                Text("Video Detail View")
-                            }
+                            MovieDetailView(movieId: movie.id)
                         } label: {
                             MovieRowView(movie: movie, isFav: vm.isFavorite(movieId: movie.id)) {
                                 vm.toggleFavorite(movieId: movie.id)
@@ -37,6 +35,9 @@ struct HomeView: View {
         }
         .listStyle(.plain)
         .navigationTitle("Popular Movies")
+        .onAppear(perform: {
+            vm.updateFavorites()
+        })
         .overlay(Group {
             if vm.isLoading { ProgressView() }
         })
