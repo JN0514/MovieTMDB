@@ -27,17 +27,19 @@ struct MovieRowView: View {
             .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(movie.title).font(.headline)
-                HStack {
-                    Text("⭐️ \(String(format: "%.1f", movie.voteAverage ?? 0))")
-                    Spacer()
-                    Button(action: toggleFav) {
-                        Image(systemName: isFav ? "heart.fill" : "heart")
-                            .foregroundColor(isFav ? .red : .gray)
-                    }
-                }
+                Text(movie.title).font(.subheadline)
+                Text("⭐️ \(String(format: "%.1f", movie.voteAverage ?? 0))")
+                
+                Image(systemName: isFav ? "heart.fill" : "heart")
+                    .foregroundColor(isFav ? .red : .gray)
+                    .highPriorityGesture(
+                        TapGesture()
+                            .onEnded({ _ in
+                                toggleFav()
+                            })
+                    )
+                    .padding(.vertical)
             }
         }
-        .padding(.vertical, 8)
     }
 }

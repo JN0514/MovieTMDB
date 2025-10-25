@@ -21,11 +21,21 @@ struct HomeView: View {
             } else {
                 Section() {
                     ForEach(vm.movies) { movie in
-                        MovieRowView(movie: movie, isFav: false) {}
+                        NavigationLink {
+                            VStack {
+                                Text("Video Detail View")
+                            }
+                        } label: {
+                            MovieRowView(movie: movie, isFav: vm.isFavorite(movieId: movie.id)) {
+                                vm.toggleFavorite(movieId: movie.id)
+                            }
+                        }
                     }
+                    .listSectionSeparator(.hidden)
                 }
             }
         }
+        .listStyle(.plain)
         .navigationTitle("Popular Movies")
         .overlay(Group {
             if vm.isLoading { ProgressView() }

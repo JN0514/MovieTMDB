@@ -14,13 +14,15 @@ class HomeViewModel: ObservableObject {
     var alertTitle = ""
     var errMsg = ""
     @Published var showAlert = false
+    @Published var favorites: Set<Int> = []
     
     private let repository: MovieRepositoryProtocol
     private var cancellables = Set<AnyCancellable>()
     
     init(repository: MovieRepositoryProtocol = MovieRepository()) {
         self.repository = repository
-        
+        self.favorites = FavoritesStore.shared.load()
+
         loadPopularMovies()
     }
     
@@ -39,4 +41,11 @@ class HomeViewModel: ObservableObject {
             })
             .store(in: &cancellables)
     }
+    
+    func toggleFavorite(movieId: Int) {
+        if favorites.contains(movieId) { favorites.remove(movieId) } else { favorites.insert(movieId) }
+        FavoritesStore.shared.save(favorites)
+    }
+
+    func isFavorite(movieId: Int) -> Bool { favorites.contains(movieId) }
 }
