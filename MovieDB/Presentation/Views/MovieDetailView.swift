@@ -13,26 +13,31 @@ struct MovieDetailView: View {
     @Environment(\.dismiss) private var dismiss
     init(movieId: Int) { _vm = StateObject(wrappedValue: MovieDetailViewModel(movieId: movieId)) }
 
+    @State private var canPlayVideo = false
     var body: some View {
         ScrollView {
             if vm.movieDetailModel != nil {
                 VStack(alignment: .leading, spacing: 12) {
                     if let video = vm.movieDetailModel?.trailerVideo {
-                        Link(destination: URL(string: "https://www.youtube.com/watch?v=\(video.key)")!) {
-                            ZStack {
-                                AsyncImage(url: Endpoints.imagePath(path: vm.movieDetailModel?.moveDetail.backdrop_path ?? "")) { phase in
-                                    switch phase {
-                                    case .empty: ProgressView()
-                                    case .success(let image): image.resizable().scaledToFit()
-                                    case .failure: Image(systemName: "photo")
-                                    @unknown default: EmptyView()
-                                    }
+                        ZStack {
+                            AsyncImage(url: Endpoints.imagePath(path: vm.movieDetailModel?.moveDetail.backdrop_path ?? "")) { phase in
+                                switch phase {
+                                case .empty: ProgressView()
+                                case .success(let image): image.resizable().scaledToFit()
+                                case .failure: Image(systemName: "photo")
+                                @unknown default: EmptyView()
                                 }
-                                Image(systemName: "play.circle.fill").font(.system(size: 64))
                             }
-                            .frame(height: 200)
-                            .frame(maxWidth: .infinity)
+                            Image(systemName: "play.circle.fill").font(.system(size: 64))
+                                .onTapGesture {
+                                    canPlayVideo = true
+                                }
                         }
+                        .frame(height: 200)
+                        .frame(maxWidth: .infinity)
+                        .fullScreenCover(isPresented: $canPlayVideo, content: {
+                            YouTubePlayer(videoID: video.key, canPlayVideo: $canPlayVideo)
+                        })
                     }
                     
                     Text(vm.movieDetailModel?.moveDetail.title ?? "-").font(.title).bold()
