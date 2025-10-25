@@ -24,7 +24,7 @@ enum Endpoints {
     static func credit(id: Int) -> URL {
         URL(string: "\(AppConfig.baseURL)/movie/\(id)/credits?api_key=\(AppConfig.apiKey)")!
     }
-    static func imagePath(id: Int) -> URL {
-        URL(string: "\(AppConfig.imageBaseURL)/w500/\(id)")!
+    static func imagePath(path: String) -> URL {
+        URL(string: "\(AppConfig.imageBaseURL)/w500/\(path)")!
     }
 }

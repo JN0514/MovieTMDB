@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-final class APIClient {
+class APIClient {
     private let session: URLSession
     init(session: URLSession = .shared) { self.session = session }
 
